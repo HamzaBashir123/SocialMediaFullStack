@@ -23,6 +23,7 @@ export default function Register() {
       };
       try {
          await axios.post("./auth/register" , user)
+         navigate('/login')
         
       } catch (error) {
         console.log(error)

@@ -67,6 +67,12 @@
     font-weight: 500;
     cursor: pointer;
 }
+.loginButton:disabled{
+  cursor: not-allowed;
+}
+.loginRegisterButton:disabled{
+  cursor: not-allowed;
+}
 
 .loginForgot{
     text-align: center;

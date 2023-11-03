@@ -5,25 +5,41 @@ import "./feed.css"
 import axios from 'axios';
 
 
-export default function Feed(){
+export default function Feed({username}){
     const [posts, setPosts] = useState([]);
+   
     
     
-    useEffect(()=>{
+    // useEffect(()=>{
+    //     console.log(username)
         
-        const fetchPosts = async()=>{
-            try {
-                const res = await axios.get("posts/")
-                 setPosts((res.data).data)
+    //     const fetchPosts = async()=>{
+    //         try {
+    //             const res = username ? await axios.get(`/posts/profile/${username}`) :
+    //             await axios.get("/posts/timeline/6540cae1dc8dd450046beaec")
+    //              setPosts(res.data)
                 
-            } catch (error) {
-                console.log(error.message)
+    //         } catch (error) {
+    //             console.log(error.message)
                 
-            }
-        }
-        fetchPosts();
+    //         }
+    //     }
+    //     fetchPosts();
 
-    },[])
+    // },[])
+
+    useEffect(() => {
+        const fetchPosts = async () => {
+          const res = username
+            ? await axios.get("/posts/profile/" + username)
+            : await axios.get("posts/timeline/6540cae1dc8dd450046beaec" );
+           
+            setPosts(res.data)
+           
+    
+        };
+        fetchPosts();
+      }, [username]);
     return(
         <div className="feed">
             
@@ -32,7 +48,7 @@ export default function Feed(){
                
                 {posts.map((p)=> (
 
-                    <Post key={p.id} post={p}/>
+                    <Post key={p._id} post={p} username={username}/>
 
                 )
 

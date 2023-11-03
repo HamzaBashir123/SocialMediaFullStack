@@ -5,7 +5,7 @@ import axios from "axios";
 import {format} from "timeago.js"
 import {Link} from "react-router-dom"
 
-export default function Post({ post }) {
+export default function Post({ post , username}) {
   
   const [like, setLike] = useState(post.likes.length);
   const [isLiked, setIsLike] = useState(false);
@@ -13,24 +13,17 @@ export default function Post({ post }) {
   const [user, setUser] = useState({});
   const PF =  process.env.REACT_APP_PUBLIC_FOLDER;
 
-  
   useEffect(()=>{
-    
     const fetchUser = async()=>{
         try {
-          
-          
-            const res = await axios.get(`profile/${post.userId}`)
-            setUser((res.data).data)
-            
-            
+            const res = await axios.get(`/users?userId=${post.userId}`)
+            setUser(res.data)    
+
         } catch (error) {
-            console.log(error.message)
-            
+            console.log(error.message)  
         }
     }
     fetchUser();
-
 },[post.userId])
 
   const likeHandler = () => {
@@ -41,25 +34,33 @@ export default function Post({ post }) {
     setLike(isLiked1 ? like - 1 : like + 1);
     setIsLike1(!isLiked1);
   };
+  
 
   return (
     <div className="post">
       <div className="postWrapper">
         <div className="postTop">
           <div className="postTopLeft">
-            <Link to={`profile/${user.firstName}`}>
-            <img
-              src={user.profilePic || PF+"person/noAvatar.jpg"}
+            {username ?<img
+              src={PF+ (user.profilePicture || "person/noAvatar.jpg")}
               alt=""
               className="postProfileImg"
-              />  
-              </Link>
+              />  :
+              <Link to={`profile/${user.username}`}>
+              <img
+                src={PF+ ( user.profilePicture || "person/noAvatar.jpg")}
+                alt=""
+                className="postProfileImg"
+                />  
+                </Link>
+               }
+           
             <span className="postUsername">
-              {user.firstName +" "+ user.lastName || "Hamza"}
+              {user.username}
             </span>
             <span className="postDate">{format(post.createdAt)}</span>
           </div>
-          <div className="postTopRight">
+          <div className="postTopRight">  
             <MoreVert /> 
           </div>
         </div>

@@ -1,42 +1,38 @@
-import mongoose from "mongoose";
-const userSchema = new mongoose.Schema(
+const mongoose = require("mongoose");
+
+const UserSchema = new mongoose.Schema(
   {
-    firstName: {
+    username: {
       type: String,
       require: true,
-    },
-    lastName: {
-      type: String,
-      require: true,
-    },
-    userName: {
-      type: String,
-      require: true,
+      min: 3,
+      max: 20,
       unique: true,
     },
-    userEmail: {
+    email: {
       type: String,
       required: true,
-      // unique: true,
+      max: 50,
+      unique: true,
     },
     password: {
       type: String,
-      require: true,
-      unique: true,
+      required: true,
+      min: 6,
     },
-    profilePic: {
+    profilePicture: {
       type: String,
       default: "",
     },
-    coverPic: {
+    coverPicture: {
       type: String,
       default: "",
     },
-    followings: {
+    followers: {
       type: Array,
       default: [],
     },
-    followers: {
+    followings: {
       type: Array,
       default: [],
     },
@@ -46,23 +42,22 @@ const userSchema = new mongoose.Schema(
     },
     desc: {
       type: String,
-      min: 10,
-      max: 100,
+      max: 50,
     },
     city: {
       type: String,
+      max: 50,
     },
     from: {
-        type: String,
-        max: 50,
+      type: String,
+      max: 50,
     },
-
     relationship: {
-        type: Number,
-        enum: [1, 2, 3],
+      type: Number,
+      enum: [1, 2, 3],
     },
   },
   { timestamps: true }
 );
 
-export default mongoose.model("User", userSchema);
+module.exports = mongoose.model("User", UserSchema);

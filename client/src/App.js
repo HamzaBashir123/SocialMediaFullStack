@@ -13,10 +13,11 @@ function App() {
   const navigate = useNavigate();
   return (
     <Routes>
-      <Route path="/" element={user ? <Home /> : <Register />} />
-      <Route path="/profile/:username" element={<Profile />} />
-      <Route path="/login" element={user ? navigate ('/') :<Login />} />
-      <Route path="/register" element={ user ? navigate ('/') : <Register />} />
+      <Route path="/" element={user ? <Home /> : <Register/>} />
+      {/* <Route path="/" element={<Home />} /> */}
+      <Route path="/profile/:username" element={<Profile/>} />
+      <Route path="/login" element={user ? navigate ('/') :<Login/>} />
+      <Route path="/register" element={ user ? navigate ('/') : <Register/>} />
     </Routes>
   );
 }

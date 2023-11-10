@@ -3,6 +3,8 @@ import Home from "./pages/home/Home.jsx";
 import Login from "./pages/login/Login.jsx";
 import Profile from "./pages/profile/Profile.jsx";
 import Register from "./pages/register/Register.jsx";
+import { BrowserRouter as Router, redirect} from "react-router-dom";
+
 
 import React, { useContext } from "react";
 import { Route, Routes ,useNavigate} from "react-router-dom";
@@ -10,15 +12,16 @@ import { Route, Routes ,useNavigate} from "react-router-dom";
 
 function App() {
   const {user} = useContext(AuthContext)
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   return (
+    <Router>
     <Routes>
-      <Route path="/" element={user ? <Home /> : <Register/>} />
-      {/* <Route path="/" element={<Home />} /> */}
+      <Route path="/" element={user ? <Home /> : <Login/>} />
       <Route path="/profile/:username" element={<Profile/>} />
-      <Route path="/login" element={user ? navigate ('/') :<Login/>} />
-      <Route path="/register" element={ user ? navigate ('/') : <Register/>} />
+      <Route path="/login" element={<Login/>} />
+      <Route path="/register" element={ <Register/>} />
     </Routes>
+    </Router>
   );
 }
 

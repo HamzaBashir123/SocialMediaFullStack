@@ -20,7 +20,7 @@ export const AuthContext = createContext(INITIAL_STATE);
 
 export function AuthContextProvider({ children }) {
   const [state, dispatch] = useReducer(AuthReducer, INITIAL_STATE);
-  console.log(state.user);
+  // console.log(state.user);
 
   useEffect(() => {
     try {

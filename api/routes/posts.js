@@ -4,15 +4,41 @@ const User = require("../models/User");
 
 //create a post
 
+// router.post("/", async (req, res) => {
+//   const {base64, otherProperties } = req.body
+//   const newPost = new Post({
+//     ...otherProperties, // Include other properties from the request body
+//     img: base64, // Assuming 'img' field exists in your Post schema
+
+//   });
+//   try {
+//     const savedPost = await newPost.save();
+//     res.status(200).json(savedPost);
+
+//   } catch (err) {
+//     console.error(err); // Log the error for debugging
+//     res.status(500).json({ error: "Internal Server Error" });
+
+//   }
+// });
+
 router.post("/", async (req, res) => {
-  const newPost = new Post(req.body);
   try {
-    const savedPost = await newPost.save();
-    res.status(200).json(savedPost);
-  } catch (err) {
-    res.status(500).json(err);
-  }
+    const newPost = await Post.create(req.body);
+    res.status(200).send({
+        status: 'Success',
+        message: 'Post created successfully',
+        post: newPost
+    })
+} catch (error) {
+    res.status(500).send({
+        status: 'Failed',
+        message: error.message
+    })
+}
 });
+
+
 //update a post
 
 router.put("/:id", async (req, res) => {

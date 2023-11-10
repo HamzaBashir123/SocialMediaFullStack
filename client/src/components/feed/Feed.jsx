@@ -8,46 +8,37 @@ import { AuthContext } from "../../context/AuthContext";
 
 export default function Feed({username}){
     const [posts, setPosts] = useState([]);
+    const [checkNewPost, setCheckNewPost] = useState(false)
     const {user} = useContext(AuthContext)
    
     
     
-    // useEffect(()=>{
-    //     console.log(username)
-        
-    //     const fetchPosts = async()=>{
-    //         try {
-    //             const res = username ? await axios.get(`/posts/profile/${username}`) :
-    //             await axios.get("/posts/timeline/6540cae1dc8dd450046beaec")
-    //              setPosts(res.data)
-                
-    //         } catch (error) {
-    //             console.log(error.message)
-                
-    //         }
-    //     }
-    //     fetchPosts();
-
-    // },[])
+   
 
     useEffect(() => {
         console.log(username)
         const fetchPosts = async () => {
           const res = username
             ? await axios.get("/posts/profile/" + username)
-            : await axios.get("posts/timeline/" + user._id );
-           
-            setPosts(res.data)
+            : await axios.get("/posts/timeline/" + user._id );
+            console.log(res.data)
+            setPosts(res.data.sort((p1,p2)=>{
+                return new Date(p2.createdAt) - new Date(p1.createdAt)
+
+            }
+            )
+            )
+            
            
     
         };
         fetchPosts();
-      }, [username ,user._id]);
+      }, [username ,user._id , checkNewPost]);
     return(
         <div className="feed">
             
             <div className="feedWrapper">
-                <Share/>
+                <Share setCheckNewPost={setCheckNewPost}/>
                
                 {posts.map((p)=> (
 

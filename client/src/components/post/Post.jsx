@@ -2,98 +2,94 @@ import { MoreVert } from "@mui/icons-material";
 import "./post.css";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import {format} from "timeago.js"
-import {Link} from "react-router-dom"
+import { format } from "timeago.js";
 import { AuthContext } from "../../context/AuthContext";
+import { Link } from "react-router-dom";
 
-export default function Post({ post , username}) {
-  
+export default function Post({ post, username }) {
   const [like, setLike] = useState(post.likes.length);
   const [isLiked, setIsLike] = useState(false);
-  const [isLiked1, setIsLike1] = useState(false);
   const [user, setUser] = useState({});
-  const PF =  process.env.REACT_APP_PUBLIC_FOLDER;
-  const {user:currentIser} = useContext(AuthContext)
+  const PF = process.env.REACT_APP_PUBLIC_FOLDER;
+  const { user: currentUser } = useContext(AuthContext);
 
-  useEffect(()=>{
-    const fetchUser = async()=>{
-        try {
-            const res = await axios.get(`/users?userId=${post.userId}`)
-            setUser(res.data)    
+  useEffect(() => {
+    setIsLike(post.likes.includes(currentUser._id));
+  }, [currentUser._id, post.likes]);
 
-        } catch (error) {
-            console.log(error.message)  
-        }
-    }
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get(`/users?userId=${post.userId}`);
+        setUser(res.data);
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
     fetchUser();
-},[post.userId])
+  }, [post.userId]);
 
   const likeHandler = () => {
     try {
-      axios.put("/post/" +post._id + "/like", {userId:})
-    } catch (err) {
-      
-    }
+      axios.put("/posts/" + post._id + "/like", { userId: currentUser._id });
+    } catch (err) {}
     setLike(isLiked ? like - 1 : like + 1);
     setIsLike(!isLiked);
   };
-  const likeHandler1 = () => {
-    setLike(isLiked1 ? like - 1 : like + 1);
-    setIsLike1(!isLiked1);
-  };
   
-
+  console.log(user)
   return (
     <div className="post">
       <div className="postWrapper">
         <div className="postTop">
           <div className="postTopLeft">
-     
-            {username ?<img
-              src={PF+ (user.profilePicture || "person/noAvatar.jpg")}
-              alt=""
-              className="postProfileImg"
-              />  :
-              <Link to={`/profile/${user.username}`}>
+            {username ? (
               <img
-                src={  user.profilePicture ?   PF+ user.profilePicture : PF + "person/noAvatar.jpg"}
+                src={
+                  user.profilePicture
+                    ? PF + user.profilePicture
+                    : PF + "person/noAvatar.jpg"
+                }
                 alt=""
                 className="postProfileImg"
-                />  
-                </Link>
-               }
-           
-            <span className="postUsername">
-              {user.username}
-            </span>
+              />
+            ) : (
+              <Link to={`/profile/${user?.username}`}>
+                <img
+                  src={
+                    user.profilePicture
+                      ? PF + user.profilePicture
+                      : PF + "person/noAvatar.jpg"
+                  }
+                  alt=""
+                  className="postProfileImg"
+                />
+              </Link>
+            )}
+
+            <span className="postUsername">{user.username}</span>
             <span className="postDate">{format(post.createdAt)}</span>
           </div>
-          <div className="postTopRight">  
-            <MoreVert /> 
+          <div className="postTopRight">
+            <MoreVert />
           </div>
         </div>
         <div className="postCenter">
           <span className="postText">{post?.desc}</span>
-          <img src={PF + post.img} alt="" className="postImg" />
+          <img src={post?.img} alt="" className="postImg" />
         </div>
         <div className="postBottom">
           <div className="postBottomLeft">
             <img
               className="likeIcon"
-              src= {`${PF}like.png`} 
-              style={{
-                border: isLiked ? "2px solid red" : "2px solid transparent",
-              }}
+              src={`${PF}like.png`}
               onClick={likeHandler}
               alt=""
             />
             <img
               className="likeIcon"
-              src= {`${PF}heart.png`} 
-              style={{
-                border: isLiked1 ? "2px solid red" : "2px solid transparent",
-              }}
-              onClick={likeHandler1}
+              src={`${PF}heart.png`}
+              onClick={likeHandler}
               alt=""
             />
             <span className="postLikeCounter">{like + " people like it"}</span>

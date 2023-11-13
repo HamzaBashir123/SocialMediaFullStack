@@ -18,6 +18,8 @@ export default function Post({ post, username }) {
   const [isDeleteMenuOpen, setIsDeleteMenuOpen] = useState(false);
   
 
+  
+
   useEffect(() => {
     setIsLike(post.likes.includes(currentUser._id));
   }, [currentUser._id, post.likes]);
@@ -25,10 +27,16 @@ export default function Post({ post, username }) {
   useEffect(() => {
     const fetchUser = async () => {
       try {
+        
         const res = await axios.get(`/users?userId=${post.userId}`);
         setUser(res.data);
+     
+        
+      
+
       } catch (error) {
         console.log(error.message);
+        toast.error(error.message, { autoClose: 1500 });
       }
     };
     fetchUser();
@@ -39,6 +47,7 @@ export default function Post({ post, username }) {
       axios.put("/posts/" + post._id + "/like", { userId: currentUser._id });
     } catch (err) {}
     setLike(isLiked ? like - 1 : like + 1);
+    toast(!isLiked ? "Like this post" : "Dislike this post" , { autoClose: 1500 });
     setIsLike(!isLiked);
   };
 
@@ -51,7 +60,8 @@ export default function Post({ post, username }) {
     try {
       axios.delete("/posts/" + key, { userId: currentUser._id });
       setIsDeleteMenuOpen(false);
-      toast.error('Email and Password are required');
+      toast.success('Delete the post');
+      window.location.reload()
     } catch (err) {
       console.log(err.message);
     }
@@ -60,7 +70,7 @@ export default function Post({ post, username }) {
 
   return (
     <div className="post">
-      
+      <ToastContainer/>
       <div className="postWrapper">
         <div className="postTop">
           <div className="postTopLeft">

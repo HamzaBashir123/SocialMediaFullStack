@@ -1,7 +1,15 @@
-import { Cancel, EmojiEmotions, Label, PermMedia, Room } from "@mui/icons-material";
+import {
+  Cancel,
+  EmojiEmotions,
+  Label,
+  PermMedia,
+  Room,
+} from "@mui/icons-material";
 import "./share.css";
-import { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import axios from "axios";
 import {
@@ -11,22 +19,21 @@ import {
   getDownloadURL,
 } from "../../firebaseConfig.js";
 
-export default function Share(setCheckNewPost) {
+export default function Share() {
   const { user } = useContext(AuthContext);
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   const desc = useRef();
   const [file, setFile] = useState(null);
-  const [imgShow, setImgShow] = useState('');
+  const toastId = React.useRef(null);
 
-  
-useEffect(()=>{
-  
-      
-},[file])
+
+  useEffect(() => {
+    toast.info("loading...");
+}, []);
   async function postHandler(e) {
     e.preventDefault();
     if (!desc.current.value && !file) {
-      alert("There is nothing to upload");
+      toast.error("There is nothing to upload")
     } else if (file) {
       /** @type {any} */
       const metadata = {
@@ -44,12 +51,13 @@ useEffect(()=>{
           const progress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           console.log("Upload is " + progress + "% done");
-          switch (snapshot.state){
+          switch (snapshot.state) {
             case "paused":
               console.log("Upload is paused");
               break;
             case "running":
               console.log("Upload is running");
+              toast.success("upload please wait...");
               break;
           }
         },
@@ -69,38 +77,30 @@ useEffect(()=>{
           // Upload completed successfully, now we can get the download URL
           getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
             console.log("File available at", downloadURL);
-            setImgShow(downloadURL)
             const newPost = {
               userId: user?._id,
               desc: desc.current.value,
               img: downloadURL || "",
             };
 
-            
             try {
               await axios.post("/posts/", newPost);
-              setCheckNewPost(true)
-              
+              window.location.reload();
             } catch (error) {
               console.error(error);
             }
             desc.current.value = "";
             setFile(null);
-              
           });
         }
       );
     } else {
-      
-
       const newPost = {
         userId: user?._id,
         desc: desc.current.value,
       };
       try {
         await axios.post("/posts/", newPost);
-        setCheckNewPost(true)
-        
       } catch (error) {
         console.error(error);
       }
@@ -109,6 +109,7 @@ useEffect(()=>{
   }
   return (
     <div className="share">
+      <ToastContainer />
       <div className="shareWrapper">
         <div className="shareTop">
           <img
@@ -129,14 +130,11 @@ useEffect(()=>{
         </div>
         <hr className="shareHr" />
         {file && (
-   
           <div className="shareImgContainer">
-            <img src= {PF +"/post/" + file?.name} alt="" className="shareImg" />
-            <Cancel className="shareCancleImg" onClick={()=> setFile(null)} />
+            <img src={PF + "/post/" + file?.name} alt="" className="shareImg" />
+            <Cancel className="shareCancleImg" onClick={() => setFile(null)} />
           </div>
-        )
-
-        }
+        )}
         <form className="shareBotton" onSubmit={postHandler}>
           <div className="shareOptions">
             <label htmlFor="file" className="shareOption">

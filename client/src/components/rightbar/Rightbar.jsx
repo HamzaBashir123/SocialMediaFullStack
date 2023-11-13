@@ -6,15 +6,17 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { Add, Remove } from "@mui/icons-material";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Rightbar({ user }) {
-  
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   const [friends, setFriends] = useState([]);
-  const { user:currentUser, dispatch } = useContext(AuthContext);
-  const [isFollowing, setIsFollowing] = useState(currentUser?.followings?.includes(user?._id));
+  const { user: currentUser, dispatch } = useContext(AuthContext);
+  const [isFollowing, setIsFollowing] = useState(
+    currentUser?.followings?.includes(user?._id)
+  );
 
-  
   // useEffect(() => {
   //   setIsFollowing(currentUser.followings.includes(user?.id));
   // }, [currentUser, user?.id]);
@@ -23,7 +25,7 @@ export default function Rightbar({ user }) {
     const getFriends = async () => {
       try {
         const friendList = await axios.get(`/users/friends/${user?._id}`);
-        
+
         setFriends(friendList.data.message);
       } catch (error) {
         console.log(error);
@@ -32,27 +34,23 @@ export default function Rightbar({ user }) {
     getFriends();
   }, [user?._id]);
 
-  
-
   const handleClick = async () => {
     try {
-      if (isFollowing) {
+      if (!isFollowing) {
+        toast.success("Follow this user...");
         await axios.put("/users/" + user?._id + "/follow", {
-          userId:currentUser._id,
+          userId: currentUser._id,
         });
-        
-      }
-      else
-      {
-        await axios.put("/users/"+user?._id+"/unfollow",{
-          userId:currentUser._id,
+      } else {
+        toast.success("Unfollow this user...");
+        await axios.put("/users/" + user?._id + "/unfollow", {
+          userId: currentUser._id,
         });
-        
       }
     } catch (error) {
-
+      
     }
-    setIsFollowing(!isFollowing)
+    setIsFollowing(!isFollowing);
   };
 
   const HomeRightbar = () => {
@@ -60,6 +58,7 @@ export default function Rightbar({ user }) {
 
     return (
       <>
+        <ToastContainer />
         <div className="birthdayContainer">
           <img src={`${PF}gift.png`} alt="" className="birthdayImg" />
           <span className="birthdayText">

@@ -1,10 +1,13 @@
 import { MoreVert } from "@mui/icons-material";
+import React from "react";
 import "./post.css";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { format } from "timeago.js";
 import { AuthContext } from "../../context/AuthContext";
 import { Link } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Post({ post, username }) {
   const [like, setLike] = useState(post.likes.length);
@@ -12,6 +15,8 @@ export default function Post({ post, username }) {
   const [user, setUser] = useState({});
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   const { user: currentUser } = useContext(AuthContext);
+  const [isDeleteMenuOpen, setIsDeleteMenuOpen] = useState(false);
+  
 
   useEffect(() => {
     setIsLike(post.likes.includes(currentUser._id));
@@ -36,10 +41,26 @@ export default function Post({ post, username }) {
     setLike(isLiked ? like - 1 : like + 1);
     setIsLike(!isLiked);
   };
+
+  const toggleDeleteMenu = () => {
+    setIsDeleteMenuOpen((prev) => !prev);
+  };
+
+  console.log(currentUser._id);
+  const handleDeletePost = (key) => {
+    try {
+      axios.delete("/posts/" + key, { userId: currentUser._id });
+      setIsDeleteMenuOpen(false);
+      toast.error('Email and Password are required');
+    } catch (err) {
+      console.log(err.message);
+    }
   
-  console.log(user)
+  };
+
   return (
     <div className="post">
+      
       <div className="postWrapper">
         <div className="postTop">
           <div className="postTopLeft">
@@ -70,9 +91,21 @@ export default function Post({ post, username }) {
             <span className="postUsername">{user.username}</span>
             <span className="postDate">{format(post.createdAt)}</span>
           </div>
-          <div className="postTopRight">
-            <MoreVert />
-          </div>
+          {post.userId === currentUser._id && (
+            <div className="postTopRight">
+              <MoreVert onClick={toggleDeleteMenu} className="moveIcon" />
+              {isDeleteMenuOpen && (
+                <div className="deleteMenu">
+                  <button
+                    key={post._id}
+                    onClick={() => handleDeletePost(post._id)}
+                  >
+                    Delete Post
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
         <div className="postCenter">
           <span className="postText">{post?.desc}</span>

@@ -57,9 +57,10 @@ router.put("/:id", async (req, res) => {
 //delete a post
 
 router.delete("/:id", async (req, res) => {
+  console.log('yaha tak agaya');
   try {
     const post = await Post.findById(req.params.id);
-    if (post.userId === req.body.userId) {
+    if (post.userId !== req.body.userId) {
       await post.deleteOne();
       res.status(200).json("the post has been deleted");
     } else {
@@ -67,6 +68,7 @@ router.delete("/:id", async (req, res) => {
     }
   } catch (err) {
     res.status(500).json(err);
+    console.log('nahi chala')
   }
 });
 //like / dislike a post

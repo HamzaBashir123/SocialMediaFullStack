@@ -1,4 +1,4 @@
-import { EmojiEmotions, Label, PermMedia, Room } from "@mui/icons-material";
+import { Cancel, EmojiEmotions, Label, PermMedia, Room } from "@mui/icons-material";
 import "./share.css";
 import { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
@@ -16,12 +16,16 @@ export default function Share(setCheckNewPost) {
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   const desc = useRef();
   const [file, setFile] = useState(null);
+  const [imgShow, setImgShow] = useState('');
 
+  
+useEffect(()=>{
+  
+      
+},[file])
   async function postHandler(e) {
     e.preventDefault();
-    console.log("postHandler");
     if (!desc.current.value && !file) {
-      console.log("if condition postHandler");
       alert("There is nothing to upload");
     } else if (file) {
       /** @type {any} */
@@ -65,26 +69,29 @@ export default function Share(setCheckNewPost) {
           // Upload completed successfully, now we can get the download URL
           getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
             console.log("File available at", downloadURL);
+            setImgShow(downloadURL)
             const newPost = {
               userId: user?._id,
               desc: desc.current.value,
               img: downloadURL || "",
             };
 
-            console.log("try img upload");
+            
             try {
               await axios.post("/posts/", newPost);
-              setCheckNewPost(true);
+              setCheckNewPost(true)
+              
             } catch (error) {
               console.error(error);
             }
             desc.current.value = "";
             setFile(null);
+              
           });
         }
       );
     } else {
-      console.log("else condition postHandler");
+      
 
       const newPost = {
         userId: user?._id,
@@ -92,7 +99,8 @@ export default function Share(setCheckNewPost) {
       };
       try {
         await axios.post("/posts/", newPost);
-        setCheckNewPost(true);
+        setCheckNewPost(true)
+        
       } catch (error) {
         console.error(error);
       }
@@ -120,6 +128,15 @@ export default function Share(setCheckNewPost) {
           />
         </div>
         <hr className="shareHr" />
+        {file && (
+   
+          <div className="shareImgContainer">
+            <img src= {PF +"/post/" + file?.name} alt="" className="shareImg" />
+            <Cancel className="shareCancleImg" onClick={()=> setFile(null)} />
+          </div>
+        )
+
+        }
         <form className="shareBotton" onSubmit={postHandler}>
           <div className="shareOptions">
             <label htmlFor="file" className="shareOption">

@@ -18,7 +18,7 @@ export default function Profile() {
         try {
             const res = await axios.get(`/users?username=${username}`)
             setUser(res.data)
-            console.log(user + "=========>  USer")
+            
         } catch (error) {
             console.log(error.message)  
         }
@@ -53,7 +53,7 @@ export default function Profile() {
           </div>
           <div className="profileRightBottom">
             <Feed username= {username}/>
-            <Rightbar user={username} />
+            <Rightbar user={user} />
           </div>
         </div>
       </div>

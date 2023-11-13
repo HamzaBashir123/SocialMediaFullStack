@@ -73,3 +73,19 @@
     border-bottom: 1px dashed grey;
     font-size: 15px;
 }
+.postTopRight{
+    /* border: 2px solid red; */
+    height: 50px;
+    width: 100px !important;
+    position: relative;
+}
+.moveIcon{
+ position: absolute;
+ right: 0;
+ display: block;
+ padding: 10px;
+}
+.deleteMenu{
+    position: absolute;
+    bottom: 0;
+}
